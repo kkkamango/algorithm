@@ -1,6 +1,6 @@
 function solution(s) {
-		let answer = 0;
-		let minLength = 1; // MIN 문자열 s를 압축한 길이 중 가장 짧은 길이
+	let answer = 0;
+	let minLength = 1; // MIN 문자열 s를 압축한 길이 중 가장 짧은 길이
     const maxLength = s.length; // MAX 문자열 s를 압축한 길이 중 가장 긴 길이
     //console.log(`maxLength =${maxLength}`);
     let resultArray = []; // 조각별로 압축한 문자열
