@@ -27,7 +27,7 @@
 
         <ul class="dropdown-menu dropdown-menu-end">
           <li v-for="item in menu" :key="item.str">
-            <a @click="item.func(item.id)" class="dropdown-item">{{item.str}}</a>
+            <a @click="item.func(todo.id)" class="dropdown-item">{{item.str}}</a>
           </li>
         </ul>
       </div>
@@ -57,7 +57,7 @@ export default {
       { str: "할일 완료", func: completeTodo },
     ];
 
-    return [today, menu, completeTodo];
+    return {today, menu, completeTodo};
   },
 };
 </script>
