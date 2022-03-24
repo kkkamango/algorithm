@@ -26,7 +26,7 @@ export default{
   name : 'TodoListMenu',
   emits : ['change-filter'], // emit을 사용하기 위해,  이벤트명 선언
   setup(props, context) {
-    const filters = inject('filter');
+    const filters = inject('filters');
     const filter = ref(0);
     const state = computed(() => filters[filter.value].str) // 계산된 속성
     watch( // filter 변경되면 emit을 이용해 부모 컴포넌트(TodoListMain)에게 전달
