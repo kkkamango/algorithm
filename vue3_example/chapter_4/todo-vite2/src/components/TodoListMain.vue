@@ -75,7 +75,8 @@ export default {
       filter.value = Number(filter_idx);
     }
 
-    watch([filter.value, todos.value],
+    watch(
+      [() => filter.value, todos.value],
     // 변화된 값 인지
     // filter=사용자가 선택한 메뉴 값, todos 원본 배열 감시
     ([new_filter, new_todos], [old_filter, old_todos]) => {
