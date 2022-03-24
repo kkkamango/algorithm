@@ -19,28 +19,28 @@ export const useFilter = () => {
         const b_date = Date.parse(b.date);
         
         if (a_date > b_date) return 1;
-        else if (a_date < b_date) return 0;
+        else if (a_date < b_date) return -1;
         else return a.id - b.id; // 숫자
     };
 
     // 필터 1. 날짜가 지났지만 완료하지 않은 작업
     const getPendingTodos = (todos) => {
-        return todos.value.filter((todo) => todo.date < today && !todo.complete)
-            .splice()   // 원본은 그대로 두고, 새로운 배열로 만들기 위해
+        return todos.value.filter((todo) => todo.date < today && !todo.completed)
+            .slice()   // 원본은 그대로 두고, 새로운 배열로 만들기 위해
             .sort(fnSort);
     };
 
     // 필터 2. 오늘 해야 할 작업
     const getActiveTodayTodos = (todos) => {
-        return todos.value.filter((todo) => todo.date === today && todo.complete)
-            .splice()
+        return todos.value.filter((todo) => todo.date === today && !todo.completed)
+            .slice()
             .sort(fnSort);
     };
 
     // 필터 3. 오늘 해야 할 작업 중 완료한 작업
     const getCompletedTodayTodos = (todos) => {
-        return todos.value.filter((todo) => todo.date === today && todo.complete)
-            .splice()
+        return todos.value.filter((todo) => todo.date === today && todo.completed)
+            .slice()
             .sort(fnSort);
     };
     
@@ -48,13 +48,13 @@ export const useFilter = () => {
     const getAllTodayTodos = (todos) => {
         return getActiveTodayTodos(todos)
             .concat(getCompletedTodayTodos(todos))
-            .splice()
+            .slice()
             .sort(fnSort);
     };
 
     // 필터 4. 날짜와 상관 없이 모든 작업
     const getAllTodos = (todos) => {
-        return todos.value.splice()
+        return todos.value.slice()
             .sort(fnSort);
     };
 
