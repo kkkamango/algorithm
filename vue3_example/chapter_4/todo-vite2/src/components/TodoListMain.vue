@@ -12,6 +12,12 @@
 </template>
 
 <script>
+export default {
+  name : 'TodoListMain',
+}
+</script>
+
+<script setup>
 // TodoListMenu로 부터 filters 값을 전달 받아 연계된 함수를 호출하여 TodoList에 전달
 import {ref, provide, inject, watch} from 'vue';
 import {useFilter} from '../compositions/filters'
@@ -19,9 +25,9 @@ import {useFilter} from '../compositions/filters'
 import TodoListMenu from './TodoListMenu.vue'
 import TodoList from './TodoList.vue'
 
-export default {
-  name : 'TodoListMain',
-  setup(props, context) {
+// export default {
+//   name : 'TodoListMain',
+  // setup(props, context) {
     const {
       getPendingTodos,
       getActiveTodayTodos,
@@ -92,18 +98,18 @@ export default {
       immediate : true // TodoListMain 생성 되었을 때 첫 변화도 즉시 감시
     })
 
-    return {
-      filter,
-      pending_todos,
-      filtered_todos,
-      use_category,
-      onChangeFilter
-    }
-  },
-  components : {
-    TodoListMenu, TodoList
-  }
-}
+//     return {
+//       filter,
+//       pending_todos,
+//       filtered_todos,
+//       use_category,
+//       onChangeFilter
+//     }
+//   },
+//   components : {
+//     TodoListMenu, TodoList
+//   }
+// }
 </script>
 <style scoped>
   .bgred{background-color: red;}
