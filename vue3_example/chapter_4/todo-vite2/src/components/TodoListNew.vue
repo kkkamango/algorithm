@@ -20,12 +20,19 @@
   </section>
 </template>
 
-<script>
-import {reactive, ref, toRefs, inject} from 'vue'
 
+<script>
 export default {
   name : 'TodoListNew',
-  setup(props) {
+}
+</script>
+
+<script setup>
+import {reactive, ref, toRefs, inject} from 'vue'
+
+// export default {
+//   name : 'TodoListNew',
+//   setup(props) {
     const today = inject('today');
     const addTodo = inject('addTodo');
     const val_obj = reactive({
@@ -42,10 +49,11 @@ export default {
       }
     };
 
-    return {
-      ...toRefs(val_obj),
-      onAddTodo
-    }
-  }
-}
+    const {job, date} = toRefs(val_obj);
+//     return {
+//       ...toRefs(val_obj),
+//       onAddTodo
+//     }
+//   }
+// }
 </script>
