@@ -37,17 +37,30 @@
 </template>
 
 <script>
-import { inject } from "vue";
-
 export default {
   name: "TodoList",
-  props: {
-    data: {
-      type: Array,
-      default: [],
-    },
-  },
-  setup() {
+}
+</script>
+
+<script setup>
+import { inject } from "vue";
+
+// export default {
+//   name: "TodoList",
+  // props: {
+  //   data: {
+  //     type: Array,
+  //     default: [],
+  //   },
+  // },
+  // setup() {
+    // <script setup> props 옵션 대신 defineProps 함수를 사용
+    const props = defineProps({
+      data: {
+        type: Array,
+        default: [],
+      },
+    });
     const removeTodo = inject("removeTodo");
     const completeTodo = inject("completeTodo");
     const today = inject("today");
@@ -57,7 +70,7 @@ export default {
       { str: "할일 완료", func: completeTodo },
     ];
 
-    return {today, menu, completeTodo};
-  },
-};
+    // return {today, menu, completeTodo};
+  // },
+// };
 </script>
