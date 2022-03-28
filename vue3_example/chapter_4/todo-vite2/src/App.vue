@@ -9,17 +9,23 @@
 </template>
 
 <script>
-import {inject} from 'vue'
-import TodoListContainer from './components/TodoListContainer.vue'
-
 export default {
   name : 'App',
-  setup(){
-    const today = inject('today');
-    return {today};
-  },
-  components : { TodoListContainer }
 }
+</script>
+
+<script setup>
+import {inject} from 'vue'
+import TodoListContainer from './components/TodoListContainer.vue'
+// <script setup> 에서는 따로 컴포넌트 선언이나 변수를 return하지 않아도 vue가 자동으로 설정해 준다.
+// export default {
+//   name : 'App',
+//   setup(){
+    const today = inject('today');
+//     return {today};
+//   },
+//   components : { TodoListContainer }
+// }
 </script>
 
 <style scoped>
