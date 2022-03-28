@@ -6,17 +6,22 @@
     </div>
   </section>
 </template>
-
 <script>
+export default{
+  name : 'TodoListContainer',
+}
+</script>
+
+<script setup>
 import {ref, readonly, provide} from 'vue'
 import {useStorage} from '../compositions/storage'
 
 import TodoListNew from './TodoListNew.vue'
 import TodoListMain from './TodoListMain.vue'
 
-export default{
-  name : 'TodoListContainer',
-  setup(props, context) {
+// export default{
+//   name : 'TodoListContainer',
+//   setup(props, context) {
     const todos = ref([]);
     const {loadTodos, saveTodos, storage_id} = useStorage();
     
@@ -52,9 +57,9 @@ export default{
     provide('completeTodo', completeTodo);
 
     loadTodos(initTotos);
-  },
-  components : {
-    TodoListNew, TodoListMain
-  }
-}
+//   },
+//   components : {
+//     TodoListNew, TodoListMain
+//   }
+// }
 </script>
