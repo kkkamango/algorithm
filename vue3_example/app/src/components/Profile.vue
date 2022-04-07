@@ -76,7 +76,7 @@
       const { axiosGet } = useAxios();
 
       const onSuccess = (data) => {
-        store.dispatch('setAboutMeData', data.data);
+        store.dispatch('about_me/setAboutMeData', data.data);
       }
 
       axiosGet('/db/about-me', onSuccess);
