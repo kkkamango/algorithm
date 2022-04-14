@@ -5,29 +5,35 @@ export default {
   name : 'NavVar',
   setup(){
     const menu = ref('profile');
+    // 라우터 추가
     const menus = [
-      {key : 'home', value : '홈', URL : '#', position : 'left'},
-      {key : 'app', value : '애플리케이션', URL : '#', position : 'left'},
-      {key : 'me', value : 'Profile', URL : '#', position : 'right'},
+      {key : 'home', value : '홈', URL : '/home', position : 'left'},
+      {key : 'app', value : '애플리케이션', URL : '/application', position : 'left'},
+      {key : 'profile', value : 'Profile', URL : '/profile', position : 'right'},
     ];
+    // const menus = [
+    //   {key : 'home', value : '홈', URL : '#', position : 'left'},
+    //   {key : 'app', value : '애플리케이션', URL : '#', position : 'left'},
+    //   {key : 'me', value : 'Profile', URL : '#', position : 'right'},
+    // ];
     
     const left_menu = computed(() => menus.filter(d => d.position === 'left'));
     const right_menu = computed(() => menus.filter(d => d.position === 'right'));
 
-    const onMovePage = (e, menu_object) => {
-      if (e){
-        e.preventDefault();
-      }
-      menu.value = menu_object.key;
-    };
+    // const onMovePage = (e, menu_object) => {
+    //   if (e){
+    //     e.preventDefault();
+    //   }
+    //   menu.value = menu_object.key;
+    // };
 
     return {
-      menu,
+      // menu,
       menu_category : [
         {id : 1, me_auto : true, value : left_menu.value},
         {id : 2, me_auto : false, value : right_menu.value},
       ],
-      onMovePage,
+      // onMovePage,
     }
   }
 }
@@ -47,10 +53,12 @@ export default {
           <!-- li : left > home, app, 
                     right > me -->
           <li v-for="menu_object in menu.value" :key="menu_object.key" class="nav-item">
-            <a @click="onMovePage($event, menu_object)" href="#"
+            <!-- 라우터 추가 -->
+            <router-link :to="menu_object.URL" class="nav-link">{{ menu_object.value }}</router-link>
+            <!-- <a @click="onMovePage($event, menu_object)" href="#"
               :class="{'nav-link' : true, 'active' : menu === menu_object.key}">
               {{menu_object.value}}
-            </a>
+            </a> -->
           </li>
         </ul>
       </div>
