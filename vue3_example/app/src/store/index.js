@@ -4,9 +4,11 @@
  */
 import { createStore } from "vuex";
 import {about_me} from './modules/about-me'
+import {applications} from './modules/applications'
 
 export const store = createStore({ // store 생성 (vuex4)
   modules : {
-    about_me
+    about_me,
+    applications,
   }
 });
