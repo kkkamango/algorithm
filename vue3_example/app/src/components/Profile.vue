@@ -23,7 +23,7 @@
         <h1>
           <span class="badge badge-pill border"
             :class="[!index ? 'bg-primary text-light' : 'bg-light text-dark']">
-            {{new Date(d.date).getFullYear()}}
+            {{new Date(d.DATE).getFullYear()}}
           </span>
         </h1>
         <div class="row h-50">
@@ -55,9 +55,9 @@
       <div class="card" :class="{'border-primary bg-primary text-light' : top, shadow : top}">
         <div class="card-body">
           <h4 class="card-title" :class="[top ? 'text-light' : 'text-muted']">
-            {{resume.title}}
+            {{resume.TITLE}}
             <hr>
-            <p class="card-text">{{resume.content}}</p>
+            <p class="card-text">{{resume.CONTENT}}</p>
             <a v-if="resume.URL != 'null'" :href="resume.URL" target="_blank"
               :class="[top ? 'text-light' : 'text-primary']">link</a>
           </h4>
