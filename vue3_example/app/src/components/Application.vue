@@ -27,7 +27,7 @@ AppCard 컴포넌트를 나열하는 컨테이너 컴포넌트
       const store = useStore();
       const {axiosGet} = useAxios();
       const applications = computed(() => 
-        store.getters['applications/applications']('DongAutoClicker')
+        store.getters['applications/applications']()
       );
       const applicaonts_count = computed(
         () => store.getters['applications/applications_count']
