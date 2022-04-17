@@ -107,7 +107,7 @@ module.exports.run = function (db, type){
     fn_about_me(db);
   } else if (type == TYPE.resume){
     fn_resume(db);
-  } else if (type == TYPE.application){
+  } else if (type == TYPE.applications){
     fn_application(db);
   } else if (type == TYPE.notification){
     fn_notification(db);
