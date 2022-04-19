@@ -2,6 +2,7 @@
 module.exports = {
    about_me : 1,
    resume : 2,
-   applications : 3, 
+   applications : 3,
    notification : 4, // 알림
+   blog : 5, // 블로그
 }
