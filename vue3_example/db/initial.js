@@ -1,95 +1,148 @@
-// 데이터 베이스를 조회
-module.exports.setup = function(app, db){
-  app.get('/', (req, res, next) => {
-    res.json({rsp : 'ok'});
-  });
+// 각 테이블을 함수로 분리
+const TYPE = require('./type.js');
 
-  app.get('/db/about-me', (req, res, next) => {
-    let result = {rsp : 'fail'};
+function fn_about_me(db){
+  db.run(
+    `CREATE TABLE IF NOT EXISTS TBL_ABOUT_MYSELF (NAME TEXT, EMAIL TEXT) 
+    UNIQUE(NAME, EMAIL))`,
+    (err2) => {
+      db.run(
+        `INSERT OR IGNORE INTO TBL_ABOUT_MYSELF (NAME, EMAIL) VALUES ('DOPT', 'test@gmail.com')`
+      )
+    }
+  );
+}
+
+function fn_resume(db){
+  db.run(
+    `CREATE TABLE IF NOT EXISTS TBL_MY_RESUME (DATE DATE, TITLE TEXT, CONTENT TEXT, URL TEXT,
+      UNIQUE(DATE, TITLE))`,
+      (err2) => {
+        if (!err2){
+          const resume = [
+            {
+              date : '1986-01-23',
+              title : '출생',
+              content : '생일 축하 합니다~!',
+              URL : null
+            }, {
+              date : '2014-04-01',
+              title : '개발자로 시작',
+              content : '새로운 커리어로 도전',
+              URL : null
+            }, {
+              date : '2021-06-07',
+              title : 'github 시작',
+              content : '개발 관련 스터디를 위한 github 시작',
+              URL : 'https://github.com/kkkamango'
+            },          
+          ];
   
-    db.get("SELECT * FROM TBL_ABOUT_MYSELF", (err, row) => {
-      if (!err){
-        result.data = row;
-        db.all('SELECT * FROM TBL_MY_RESUME ORDER BY DATE DESC', (err2, rows) => {
-          if (!err2){
-            result.rsp = 'ok';
-            result.data.resume = rows;
-            res.json(result);
-          } else {
-            res.json(result);
-          }
-        });
-      } else {
-        res.json(result);
-      }
-    });
-  });
-
-  app.get('/db/applications', (req, res, next) => {
-    let result = {
-      rsp: 'fail',
-    }
-    db.all('SELECT * FROM tbl_applications ORDER BY date desc', (err, rows) => {
-      if (!err) {
-        result.rsp = 'ok'
-        result.data = rows
-        res.json(result)
-      } else {
-        res.json(result)
-      }
-    })
-  })
-
-  app.get('/db/notification/:id', (req, res, next) => {
-    let result = {
-      rsp: 'fail',
-    }
-    db.get(
-      `SELECT * FROM tbl_notification WHERE expiration > date('now') AND id > ${req.params.id} ORDER BY id desc`,
-      (err, row) => {
-        if (!err) {
-          result.rsp = !row ? 'nodata' : 'ok'
-          if (row) {
-            result.data = row
-          }
-          res.json(result)
-        } else {
-          result.error = err.message
-          res.json(result)
+          resume.forEach(item => {
+            const query = `INSERT OR IGNORE INTO TBL_MY_RESUME 
+              (DATE, TITLE, CONTENT, URL) 
+              VALUES('${item.date}', '${item.title}', '${item.content}', '${item.URL}')`;
+            db.run(query);
+          });
         }
       }
-    )
-  })
+  );
+}
 
-  app.get('/db/notifications/', (req, res, next) => {
-    let result = {
-      rsp: 'fail',
-    }
-    db.all(`SELECT * FROM tbl_notification`, (err, rows) => {
+function fn_application(db){
+  db.run(
+    'CREATE TABLE IF NOT EXISTS tbl_applications (id INT, name TEXT , content TEXT, date DATE, platform TEXT, url TEXT, image TEXT, UNIQUE(name, date))',
+    (err) => {
       if (!err) {
-        result.rsp = 'ok'
-        result.data = rows
-        res.json(result)
-      } else {
-        result.error = err.message
-        res.json(result)
-      }
-    })
-  })
+        const applications = [
+          {
+            id: 1,
+            name: '힘을 찾아런',
+            content:
+              '아주 간단한 런닝 게임인 "힘을 찾아런"을 소개합니다. 별다른 생각 없이 시간을 죽이기에 적합한 게임입니다. 플레이 제약을 통한 스트레스 없이 무제한으로 즐길 수 있으며, 골드 역시 스트레스 받지 않을정도로 드립니다. 점프 하나로 모험을 떠나고 보스를 물리치세요!',
+            date: '2017-07-01',
+            platform: 'Android',
+            url:
+              'https://play.google.com/store/apps/details?id=com.dopt.rfp1&hl=ko&gl=US',
+            image: 'http://localhost:8000/assets/runforpower.png',
+          },
+          {
+            id: 2,
+            name: 'DongAutoClicker',
+            content:
+              '게임을 즐기거나 자동화 테스트를 위해 마우스를 정해진 패턴대로 움직이게 할 수 있는 프로그램입니다.',
+            date: '2018-10-14',
+            platform: 'Windows',
+            url: 'https://m.blog.naver.com/armigar/221377064681',
+            image: 'http://localhost:8000/assets/dongautoclicker.png',
+          },
+        ]
 
-  app.get('/db/blog', (req, res, next) => {
-    let result = {
-      rsp: 'fail',
-    }
-    db.all(`SELECT * FROM tbl_blog order by id desc`, (err, rows) => {
-      if (!err) {
-        result.rsp = 'ok'
-        result.data = rows
-        res.json(result)
-      } else {
-        result.error = err.message
-        res.json(result)
+        applications.forEach((item) => {
+          const query = `INSERT OR IGNORE INTO tbl_applications (id, name, content, date, platform, url, image) VALUES (${item.id}, '${item.name}', '${item.content}', '${item.date}', '${item.platform}' , '${item.url}', '${item.image}')`
+          db.run(query)
+        })
       }
-    })
-  })
+    }
+  )
+}
+
+function fn_notification(db) {
+  db.run(
+    'CREATE TABLE IF NOT EXISTS tbl_notification (id INTEGER PRIMARY KEY AUTOINCREMENT, content TEXT, expiration DATE, type TEXT)',
+    (err) => {
+      if (!err) {
+        let query = 'DELETE from tbl_notification'
+        db.run(query)
+
+        query = `INSERT INTO tbl_notification (content, expiration, type) VALUES ('사이트 공사중입니다. 일부 사용에 제약이 있을 수 있습니다', '2099-12-31', 'warning')`
+        db.run(query)
+      }
+    }
+  )
+}
+
+function fn_blog(db) {
+  db.run(
+    "CREATE TABLE IF NOT EXISTS tbl_blog (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, date DATETIME DEFAULT (datetime('now','localtime')), post TEXT)",
+    (err) => {
+      if (!err) {
+        query = `INSERT INTO tbl_blog (title, post) VALUES ('Sample Blog Test', '<p> This blog post shows a few different types of content that’s supported and styled with Bootstrap. Basic typography, images, and code are all supported. </p><hr /><p> Cum sociis natoque penatibus et magnis <a href="#">dis parturient montes</a>, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Sed posuere consectetur est at lobortis. Cras mattis consectetur purus sit amet fermentum. </p><blockquote><p> Curabitur blandit tempus porttitor. <strong>Nullam quis risus eget urna mollis</strong> ornare vel eu leo. Nullam id dolor id nibh ultricies vehicula ut id elit. </p></blockquote><p> Etiam porta <em>sem malesuada magna</em> mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur. </p><h2>Heading</h2><p> Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. </p><h3>Sub-heading</h3><p> Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. </p><pre><code>Example code block</code></pre><p> Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa. </p><h3>Sub-heading</h3><p> Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. </p><ul><li>Praesent commodo cursus magna, vel scelerisque nisl consectetur et.</li><li>Donec id elit non mi porta gravida at eget metus.</li><li>Nulla vitae elit libero, a pharetra augue.</li></ul><p> Donec ullamcorper nulla non metus auctor fringilla. Nulla vitae elit libero, a pharetra augue. </p><ol><li>Vestibulum id ligula porta felis euismod semper.</li><li> Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. </li><li>Maecenas sed diam eget risus varius blandit sit amet non magna.</li></ol><p> Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis. </p>')`
+        db.run(query)
+
+        query = `INSERT INTO tbl_blog (title, post) VALUES ('꿈에(박정현) 가사', '<p><em>김연지님이 최근에 부르신 꿈에가 너무 좋아 가사를 공유해봅니다.</em></p> <div>어떤말을해야하는지<br />난 너무 가슴이 떨려서<br />우리 옛날 그대로의<br />모습으로 만나고 있네요</div> <div>이건 꿈인걸 알지만<br />지금 이대로 깨지않고서<br />영원히 잠잘수 있다면</div> <div>날 안아주네요<br />예전모습처럼<br />그동안 힘들어진<br />나를 보며 위로하네요<br />내손을 잡네요<br />지친 맘 쉬라며<br />지금도 그대 손은<br />그때처럼 따뜻하네요</div> <div>혹시 이게 꿈이란걸<br />그대가 알게하진 않을거야<br />내가 정말 잘할거야<br />그대 다른 생각 못하도록<br />그대 이젠 가지마요<br />그냥 여기서 나와 있어줘요<br />나도 깨지않을게요<br />이젠 보내지 않을거예요</div> <div>계속 나를 안아주세요<br />예전모습처럼<br />그 동안 힘들어진<br />나를 보며 위로하네요<br />내손을 잡네요<br />지친 맘 이제 쉬라며<br />지금도 그대 손은<br />그때처럼따뜻하네요<br />대답해줘요<br />그대도 나를<br />나만큼 그리워했다고...</div> <div>바보같이 즐거워만하는 날보며<br />안쓰런 미소로 (슬픈 미소로)<br />이제 난 먼저갈게<br />미안한듯 얘기하네요<br />나처럼 그대도 알고있었군요<br />그래도 고마워요<br />이렇게라도 또만나줘서</div>')`
+        db.run(query)
+      }
+    }
+  )
+}
+
+function fn_accounts(db) {
+  // db.run('DROP TABLE IF EXISTS tbl_accounts')
+
+  db.run(
+    "CREATE TABLE IF NOT EXISTS tbl_accounts (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT, password TEXT, date DATETIME DEFAULT (datetime('now', 'localtime')), grade TEXT, token TEXT)",
+    (err) => {
+      if (!err) {
+        query = `INSERT OR IGNORE INTO tbl_accounts (id, email,password, grade, token) VALUES ( (SELECT id FROM tbl_accounts WHERE grade = 'owner'), 'vue', 'vue', 'owner', null)`
+        db.run(query)
+      }
+    }
+  )
+}
+
+module.exports.run = function (db, type){
+  if (type == TYPE.about_me){
+    fn_about_me(db);
+  } else if (type == TYPE.resume){
+    fn_resume(db);
+  } else if (type == TYPE.applications){
+    fn_application(db);
+  } else if (type == TYPE.notification){
+    fn_notification(db);
+  } else if (type == TYPE.blog) {
+    fn_blog(db);
+  } else if (type == TYPE.accounts) {
+    fn_accounts(db)
+  }
 }
