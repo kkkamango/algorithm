@@ -5,4 +5,5 @@ module.exports = {
    applications : 3,
    notification : 4, // 알림
    blog : 5, // 블로그
+   accounts : 6, // admin
 }
