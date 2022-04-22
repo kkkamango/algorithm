@@ -1,24 +1,58 @@
 import axios from 'axios'
+import {ref} from 'vue'
 
 export default function (){
   const BASE_URL = 'http://localhost:8000';
-  const axiosGet = (URL, onSuccess = null, onFail = null) => {
-    const final_url = URL.startsWith('http') ? URL : BASE_URL + URL;
+  const communicating = ref(false);
+  const createURL = (url) => {
+    return url.startsWith('http') ? url : BASE_URL + url;
+  }
 
-    axios.get(final_url)
+  const checkResult = (resp, onSuccess, onFailed) =>{
+    communicating.value = false;
+
+    if (resp.status === 200 && resp.data.rsp === 'ok'){
+      if(onSuccess){
+        onSuccess(resp.data)
+      }
+    } else {
+      if (onFailed){
+        onFailed(resp.data)
+      }
+    }
+  }
+
+  const axiosGet = async(url, onSuccess = null, onFailed = null) => {
+    communicating.value = true;
+
+    axios.get(createURL(url))
       .then(resp => {
-        if (resp.status === 200 && resp.data.rsp === 'ok') {
-          if (onSuccess) {
-            onSuccess(resp.data);
-          }
-        } else {
-          if (onFail) {
-            onFail(resp.data);
-          }
-        }
+        checkResult(resp, onSuccess, onFailed)
       });
   }
+
+  const axiosPost = async(url, data, onSuccess = null, onFailed = null) => {
+    communicating.value = true;
+
+    axios.post(createURL(url), data)
+      .then(resp => {
+        checkResult(resp, onSuccess, onFailed)
+      });
+  }
+
+  const axiosPut = async(url, data, onSuccess = null, onFailed = null) => {
+    communicating.value = true;
+
+    axios.get(createURL(url), data)
+      .then(resp => {
+        checkResult(resp, onSuccess, onFailed)
+      });
+  }
+
   return {
-    axiosGet
+    communicating,
+    axiosGet,
+    axiosPost,
+    axiosPut,
   }
 }
