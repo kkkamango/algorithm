@@ -1,125 +1,99 @@
+<!-- 
+로딩 프로세스
+1. cookie에서 email과 token을 얻어온다
+  cookie가 없으면 임의의 값을 넣는다
+2. email과 token을 서버로 부터 로그인/최초 정보입력/자동로그인 중 하나의 응답을 받는다.
+  a. email, token 일치하지 않으면 로그인 화면으로 이동
+  b. DB의 사용자 정보와 일치하면, 
+    최초 정보 입력화면으로 이동
+  c. email, token 일치하고, DB의 사용자 정보와 일치하지 않으면,
+    자동 로그인이 활성화 되어있는지 확인 후
+    관리자 페이지로 이동
+
+
+  state = ok      로그인 완료
+  state = login   로그인 창 띄워야 함
+  state = update  최초 정보 입력 or 비밀번호 변경 창 띄워야 함
+  state = loading 토큰 검사 중
+
+  cookie = stay   로그인 유지 여부 저장
+  cookie = email  로그인 하려는 email을 저장
+  cookie = token  로그인 하려는 token을 저장
+-->
+
+
+<template>
+  <div v-if="state == 'ok'">
+    <div class="row text-right pr-sm-2">
+      <small><a href="#" @click="onLogout">Logout</a></small>
+    </div>
+  </div>
+
+  <div v-else-if="state == 'loading'">Loading...</div>
+
+  <Login v-else :email="email" :type="state" @state="state = 'ok'"/>
+  <!-- 로그인 완료 여부는 사용자 이벤트(custom event)를 지켜봐야 함
+  이벤트명=state
+  이벤트 발생시 state = 'ok'로 변경하여 로그인이 완료되었다고 admin 컴포넌트에 알린다.
+  admin 컴포넌트가 마운트 되기 전에 token 검사한다.  -->
+</template>
+
 <script>
-import {ref, reactive, computed, onMounted} from 'vue'
-import useAxios from '/@app_modules/axios.js'
-import {setCookie, getCookie} from '/@app_modules/cookie.js'
+import Login from '/@components/Login.vue'
+import {ref, onBeforeMount} from 'vue';
+import {getCookie, setCookie} from '/@utils/cookie.js'
+import useLogin from '/@app_modules/login.js'
 
 export default {
-  name : 'NavVar',
   setup(){
-    // const menu = ref('profile');
-    // 라우터 추가
-    const menus = [
-      {key : 'home', value : '홈', URL : '/home', position : 'left'},
-      {key : 'app', value : '애플리케이션', URL : '/application', position : 'left'},
-      {key : 'profile', value : 'Profile', URL : '/profile', position : 'right'},
-      {key : 'admin', value : 'Admin', URL : '/admin', position : 'right'},
-      
-    ];
-    // const menus = [
-    //   {key : 'home', value : '홈', URL : '#', position : 'left'},
-    //   {key : 'app', value : '애플리케이션', URL : '#', position : 'left'},
-    //   {key : 'me', value : 'Profile', URL : '#', position : 'right'},
-    // ];
-    
-    const left_menu = computed(() => menus.filter(d => d.position === 'left'));
-    const right_menu = computed(() => menus.filter(d => d.position === 'right'));
+    const state = ref('loading');
+    const token = ref(getCookie('token'));
+    const email = ref(getCookie('email'));
 
-    // const onMovePage = (e, menu_object) => {
-    //   if (e){
-    //     e.preventDefault();
-    //   }
-    //   menu.value = menu_object.key;
-    // };
+    onBeforeMount(() => {
+      const {checkToken} = useLogin();
+      // 토큰 여부 검사
+      const auto_login = getCookie('stay') === 'true'; // 로그인 유지 여부 저장
 
-    // 알림 관련
-    let notification = reactive({id : 0});
-    let show_notification = ref(false);
+      // 초기값
+      email.value = email.value == '' ? 'test-email' : email.value;
+      token.value = token.value == '' ? 'test-token' : token.value;
 
-    const onOpenNotification = (e) => {
-      if (e){
-        e.preventDefault();
-      }
-      show_notification.value = true;
-    }
+      checkToken(email.value, token.value)
+      .then(data => {
+        if (data.data == 'vue'){
+          state.value = 'update'; // 최초 정보 입력 or 비밀번호 변경 창 띄워야 함
+          email.value = ''; // 초기화
 
-    const onCloseNotification = (e) => {
-      if (e){
-        e.preventDefault();
-      }
-      setCookie('notification', notification.id, 1);
-      notification.id = 0;
-      show_notification.value = false;
-    }
+        } else if (auto_login){
+          state.value = 'ok'; // 로그인 완료
 
-    onMounted(() => {
-      const block_noti_id = getCookie('notification') || 0;
-      const {axiosGet} = useAxios();
-      axiosGet(`/db/notification/${block_noti_id}`, (data) => {
-        Object.assign(notification, data.data);
+        } else {
+          state.value = 'login'; // 로그인 창 띄움
+        }
       })
-    });
+      .catch(e => {
+        state.value = 'login'; // 로그인 창 띄움
+      });
+    })
+
+    const onLogout = (e) => {
+      if (e){
+        e.preventDefault();
+      }
+      setCookie('token', '');
+      state.value = 'login'; // 로그인 창 띄움
+    }
+
 
     return {
-      // menu,
-      menu_category : [
-        {id : 1, me_auto : true, value : left_menu.value},
-        {id : 2, me_auto : false, value : right_menu.value},
-      ],
-      // onMovePage,
-      notification,
-      show_notification,
-      onOpenNotification,
-      onCloseNotification,
+      state,
+      email,
+      onLogout,
     }
+  },
+  components : {
+    Login,
   }
 }
 </script>
-
-<template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-      <a href="/" class="navbar-brand">TripleK</a>
-      <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <!-- ul : left_menu and right_menu -->
-        <ul v-for="menu in menu_category" :key="menu.id"
-          :class="{'navbar-nav' : true, 'me-auto' : menu.me_auto}">
-          <!-- li : left > home, app, 
-                    right > me -->
-          <li v-for="menu_object in menu.value" :key="menu_object.key" class="nav-item">
-            <!-- 라우터 추가 -->
-            <router-link :to="menu_object.URL" class="nav-link">{{ menu_object.value }}</router-link>
-            <!-- <a @click="onMovePage($event, menu_object)" href="#"
-              :class="{'nav-link' : true, 'active' : menu === menu_object.key}">
-              {{menu_object.value}}
-            </a> -->
-          </li>
-        </ul>
-        <!-- 알림 -->
-        <ul v-show="notification.id > 0" class="navbar-nav">
-          <li class="nav-item">
-            <button @click="onOpenNotification" class="btn btn-danger">&#128226;</button>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-
-  <!-- teleport는 to라는 속성을 받아 어느 태그애 그림을 그릴지(append) 결정 -->
-  <teleport to='#notification' v-if="show_notification">
-    <div :class="'bg-' + notification.type" class="container notification border border-dark rounded-3 mt-3 p-3">
-      <div v-if="notification.type" class="d-flex">
-        <span class="me-auto fs-4 fw-bold text-uppercase text-light">{{notification.type}}</span>
-        <button @click="onCloseNotification" class="btn fw-bold">&times;</button>
-      </div>
-      <hr/>
-      <div class="text-light text-wrap">{{notification.content}}</div>
-    </div>
-  </teleport>
-</template>
-
-<style scoped>
-  .notification { text-shadow: 2px 2px 2px gray; }
-</style>
