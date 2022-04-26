@@ -43,7 +43,7 @@ export default function (){
   const axiosPut = async(url, data, onSuccess = null, onFailed = null) => {
     communicating.value = true;
 
-    axios.get(createURL(url), data)
+    axios.put(createURL(url), data)
       .then(resp => {
         checkResult(resp, onSuccess, onFailed)
       });
