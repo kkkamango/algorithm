@@ -3,7 +3,7 @@ const { axiosPut, axiosPost } = useAxios()
 
 export default function(){
   // 세션과 같이 관리자가 접속중인지 확인
-  const checkToken = (email, token) => {
+  const checkToken = (email, token) => 
     new Promise((resolve, reject) => {
       axiosPost(
         `/db/accounts/check-token/${email}/${token}`, 
@@ -16,9 +16,8 @@ export default function(){
         } 
       )
     });
-  }
-
-  const updatePassword = (email, passowrd, oldpassword) => {
+  
+  const updatePassword = (email, password, oldpassword) =>
     new Promise((resolve, reject) => {
       axiosPut(
         `/db/accounts/${email}/${password}/${oldpassword}`, 
@@ -31,9 +30,8 @@ export default function(){
         }
       )
     });
-  }
 
-  const login = (email, password) => {
+  const login = (email, password) => 
     new Promise((resolve, reject) => {
       axiosPost(
         `/db/accounts/login/${email}/${password}`, 
@@ -46,7 +44,6 @@ export default function(){
         }
       )
     });
-  }
 
   return {
     checkToken,
