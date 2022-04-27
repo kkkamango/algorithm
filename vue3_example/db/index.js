@@ -27,6 +27,7 @@ let db = new sqlite3.Database( 'database.db', (err) => {
   }
 });
 
+app.use(express.json()) // RequestBody=json 
 app.listen(PORT, () => {
   console.log(`Listening... ${PORT}`);
 });
