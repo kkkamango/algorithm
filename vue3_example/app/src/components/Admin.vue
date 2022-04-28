@@ -27,6 +27,7 @@
     <div class="row text-right pr-sm-2">
       <small><a href="#" @click="onLogout">Logout</a></small>
     </div>
+    <Editor />
   </div>
 
   <div v-else-if="state == 'loading'">Loading...</div>
@@ -40,6 +41,7 @@
 
 <script>
 import Login from '/@components/Login.vue'
+import Editor from '/@components/Editor.vue'
 import {ref, onBeforeMount} from 'vue';
 import {getCookie, setCookie} from '/@utils/cookie.js'
 import useLogin from '/@app_modules/login.js'
@@ -94,6 +96,7 @@ export default {
   },
   components : {
     Login,
+    Editor
   }
 }
 </script>
