@@ -1,3 +1,13 @@
 #app{
     font-family: Avenir, Arial, Helvetica, sans-serif;
 }
+
+/* 마크다운 */
+#md > table tbody tr:nth-child(odd){
+    background-color: #ccc;
+}
+#md > blockquote {
+    margin-left: 32px;
+    border-left: 4px solid #ccc;
+    padding-left: 16px;
+}
