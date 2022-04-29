@@ -44,7 +44,7 @@ stau = 로그인 유지
 </template>
 
 <script>
-import {ref, onMounted} from 'vue'
+import {ref, onMounted, inject} from 'vue'
 import useLogin from '/@app_modules/login.js'
 // import useLogin from '/@app_modules/login.js'
 import {setCookie, getCookie} from '/@utils/cookie.js'
@@ -66,6 +66,9 @@ export default {
     const new_password2 = ref('');
     const invalid = ref('ok'); // no_email, wrong_password, diff_passwords
     const { updatePassword, login } = useLogin();
+
+    // 토스트 추가
+    const toast = inject('toast', '');
 
     stay.value = getCookie('stay') == 'true';
 
@@ -93,23 +96,28 @@ export default {
             context.emit('state');
           })
           .catch((data) =>{
-            invalid.value = data.rsp;
+            invalid.value = toast.value = data.rsp;
           });
 
       } else {
         // 비밀번호 변경
         if(new_password1.value !== new_password2.value){
-          invalid.value = '패스워드가 다릅니다.';
+          invalid.value = toast.value = 'diff_passwords';
           new_password1.value = new_password2.value = '';
 
+        } else if (new_password1.value == 'vue') {
+          invalid.value = toast.value = 'invalid_password'
+          new_password1.value = new_password2.value = ''
+        
         } else {
           updatePassword(email.value, password.value, new_password1.value)
             .then(data => {
               password.value = new_password1.value = new_password2.value = '';
+              toast.value = '비밀번호가 변경되었습니다. 로그인 해주세요.'
               is_login_form.value = true; // 로그인 화면
             })
             .catch((data) =>{
-              invalid.value = data.rsp;
+              invalid.value = toast.value = data.rsp;
             });
         }
       }
