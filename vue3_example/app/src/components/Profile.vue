@@ -38,7 +38,8 @@
 
 <script>
   import {defineComponent, computed} from 'vue'
-  import {useStore} from 'vuex'
+  // import {useStore} from 'vuex'
+  import { useProfile } from '/@compositions/useProfile'
   import useAxios from '/@app_modules/axios.js'
 
   // Card 컴포넌트
@@ -72,18 +73,20 @@
   export default {
     name : 'Profile',
     setup() {
-      const store = useStore();
+      // const store = useStore();
+      const {user_data, setAboutMeData} = useProfile();
       const { axiosGet } = useAxios();
 
       const onSuccess = (data) => {
-        store.dispatch('about_me/setAboutMeData', data.data);
+        // store.dispatch('about_me/setAboutMeData', data.data);
+        setAboutMeData(data.data);
       }
 
       axiosGet('/db/about-me', onSuccess);
 
-      const user_data = computed(
-        () => store.getters['about_me/user_data']
-      );
+      // const user_data = computed(
+      //   () => store.getters['about_me/user_data']
+      // );
 
       return {
         user_data,
