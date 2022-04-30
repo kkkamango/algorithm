@@ -17,33 +17,44 @@ AppCard 컴포넌트를 나열하는 컨테이너 컴포넌트
 
 <script>
   import {ref, onMounted, computed} from 'vue'
-  import {useStore} from 'vuex'
+  // import {useStore} from 'vuex'
+  import { useApplications } from '/@compositions/useApplications'
   import AppCard from '/@components/AppCard.vue'
   import useAxios from '/@app_modules/axios.js'
 
   export default {
     name : 'Application',
     setup() {
-      const store = useStore();
+      // const store = useStore();
+      const {
+        applications_count,
+        applications,
+        setApplications
+      } = useApplications();
       const {axiosGet} = useAxios();
-      const applications = computed(() => 
-        store.getters['applications/applications']()
-      );
-      const applicaonts_count = computed(
-        () => store.getters['applications/applications_count']
-      );
+      // const applications = computed(() => 
+      //   store.getters['applications/applications']()
+      // );
+      // const applicaonts_count = computed(
+      //   () => store.getters['applications/applications_count']
+      // );
 
       onMounted(() => {
-        if (!store.getters.applications_count){
+        if (!applications_count.value){
           axiosGet('/db/applications', (data) => {
-            store.dispatch('applications/setApplications', data.data);
-          });
+            setApplications(data.data);
+          });  
         }
+        // if (!store.getters.applications_count){
+        //   axiosGet('/db/applications', (data) => {
+        //     store.dispatch('applications/setApplications', data.data);
+        //   });
+        // }
       });
 
       return {
-        applications,
-        applicaonts_count
+        applications : applications(),
+        applications_count
       }
     },
     components : {
